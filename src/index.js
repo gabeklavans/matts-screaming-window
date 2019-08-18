@@ -31,6 +31,9 @@ var strongUp;
 var weakDown;
 var strongDown;
 
+var strongUpPressed = false;
+var strongDownPressed = false;
+
 // How many inputs are being pressed simultaneously
 var inputCount = 0;
 
@@ -52,9 +55,19 @@ function create() {
 
     objects.forEach(obj => obj.anchor.setTo(0.5, 0.5));
 
+    // Add the hotkey objects
     weakUp = game.input.keyboard.addKey(Phaser.Keyboard.E);
     weakUp.onDown.add(() => {goingUp = true; inputCount ++}, this);
-    weakUp.onUp.add(() => {goingUp = false; inputCount --}, this);
+    weakUp.onUp.add(() => {
+        goingUp = false; 
+        inputCount --;
+        if (strongUpPressed) {
+            strongUpPressed = false;
+            inputCount --;
+        }}, this);
+
+    strongUp = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    strongUp.onDown.add(() => {goingUp = true; strongUpPressed = true; inputCount ++}, this);
 
     weakDown = game.input.keyboard.addKey(Phaser.Keyboard.D);
     weakDown.onDown.add(() => {goingDown = true; inputCount ++}, this);
