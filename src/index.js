@@ -26,21 +26,23 @@ const game = new Phaser.Game(config);
 var window;
 
 // All possible input types
-var weakUp;
-var strongUp;
-var weakDown;
-var strongDown;
+var weakUpLeft;
+var strongUpLeft;
+var weakDownLeft;
+var strongDownLeft;
 
 var strongUpPressed = false;
 var strongDownPressed = false;
 
 // How many inputs are being pressed simultaneously
 var inputCount = 0;
+var strongCount = 0;
 
 // Possible states of motion
 var goingUp = false;
 var goingDown =  false;
 var isLocked = false;
+var isStrong = false;
 
 function preload() {
     this.game.load.image('study', 'assets/img/study.png');
@@ -56,22 +58,21 @@ function create() {
     objects.forEach(obj => obj.anchor.setTo(0.5, 0.5));
 
     // Add the hotkey objects
-    weakUp = game.input.keyboard.addKey(Phaser.Keyboard.E);
-    weakUp.onDown.add(() => {goingUp = true; inputCount ++}, this);
-    weakUp.onUp.add(() => {
-        goingUp = false; 
-        inputCount --;
-        if (strongUpPressed) {
-            strongUpPressed = false;
-            inputCount --;
-        }}, this);
+    weakUpLeft = game.input.keyboard.addKey(Phaser.Keyboard.E);
+    weakUpLeft.onDown.add(() => {goingUp = true; inputCount ++}, this);
+    weakUpLeft.onUp.add(() => {goingUp = false; inputCount --;}, this);
 
-    strongUp = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
-    strongUp.onDown.add(() => {goingUp = true; strongUpPressed = true; inputCount ++}, this);
+    strongUpLeft = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    strongUpLeft.onDown.add(() => {goingUp = true; inputCount ++}, this);
+    strongUpLeft.onUp.add(() => {strongCount ++}, this);
 
-    weakDown = game.input.keyboard.addKey(Phaser.Keyboard.D);
-    weakDown.onDown.add(() => {goingDown = true; inputCount ++}, this);
-    weakDown.onUp.add(() => {goingDown = false; inputCount --}, this);
+    weakDownLeft = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    weakDownLeft.onDown.add(() => {goingDown = true; inputCount ++}, this);
+    weakDownLeft.onUp.add(() => {goingDown = false; inputCount --}, this);
+
+    strongDownLeft = game.input.keyboard.addKey(Phaser.Keyboard.C);
+    strongDownLeft.onDown.add(() => {goingDown = true; inputCount ++}, this);
+    strongDownLeft.onUp.add(() => {strongCount ++}, this);
 
     game.add.text(5, game.height - 20, 'Made using boilerplate by oliverbenns https://github.com/oliverbenns/phaser-starter', { font: "bold 14px Arial", fill: "#fff" });
     window = game.add.sprite(game.world.centerX, game.world.centerY * 1.2, 'window')
@@ -87,7 +88,12 @@ function update() {
     }
 
     if (isLocked) {
-        // sad trombone sound
+        if (strongCount) {
+            goingDown = false;
+            goingUp = false;
+            strongCount --;
+            inputCount --;
+        }
     } else {
         if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) {
             window.y -= 8;
