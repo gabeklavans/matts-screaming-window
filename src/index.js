@@ -7,8 +7,8 @@ import pkg from '../package.json';
 // This is the entry point of your game.
 
 const config = {
-    width: 800,
-    height: 600,
+    width: 700,
+    height: 525,
     renderer: Phaser.AUTO,
     parent: '',
     state: {
@@ -23,13 +23,23 @@ const config = {
 
 const game = new Phaser.Game(config);
 
+// sprite variables
 var window;
+var holder;
+var land;
+var therm;
+var merc;
 
 // All possible input types
 var weakUpLeft;
 var strongUpLeft;
 var weakDownLeft;
 var strongDownLeft;
+
+var weakUpRight;
+var strongUpRight;
+var weakDownRight;
+var strongDownRight;
 
 var strongUpPressed = false;
 var strongDownPressed = false;
@@ -46,7 +56,11 @@ var isStrong = false;
 
 function preload() {
     this.game.load.image('study', 'assets/img/study.png');
-    this.game.load.image('window', 'assets/img/carwindow.jpg');
+    this.game.load.image('window', 'assets/img/carwindow.png');
+    this.game.load.image('holder', 'assets/img/holder.png');
+    this.game.load.image('land', 'assets/img/land.png');
+    this.game.load.image('therm', 'assets/img/therm.png');
+    this.game.load.image('merc', 'assets/img/merc.png');
 }
 
 function create() {
@@ -56,6 +70,7 @@ function create() {
     ];
 
     objects.forEach(obj => obj.anchor.setTo(0.5, 0.5));
+    game.stage.backgroundColor = "#727272";
 
     // Add the hotkey objects
     weakUpLeft = game.input.keyboard.addKey(Phaser.Keyboard.E);
@@ -74,8 +89,45 @@ function create() {
     strongDownLeft.onDown.add(() => {goingDown = true; inputCount ++}, this);
     strongDownLeft.onUp.add(() => {strongCount ++}, this);
 
+    weakUpRight = game.input.keyboard.addKey(Phaser.Keyboard.U);
+    weakUpRight.onDown.add(() => {goingUp = true; inputCount ++}, this);
+    weakUpRight.onUp.add(() => {goingUp = false; inputCount --;}, this);
+
+    strongUpRight = game.input.keyboard.addKey(Phaser.Keyboard.SEVEN);
+    strongUpRight.onDown.add(() => {goingUp = true; inputCount ++}, this);
+    strongUpRight.onUp.add(() => {strongCount ++}, this);
+
+    weakDownRight = game.input.keyboard.addKey(Phaser.Keyboard.J);
+    weakDownRight.onDown.add(() => {goingDown = true; inputCount ++}, this);
+    weakDownRight.onUp.add(() => {goingDown = false; inputCount --}, this);
+
+    strongDownRight = game.input.keyboard.addKey(Phaser.Keyboard.M);
+    strongDownRight.onDown.add(() => {goingDown = true; inputCount ++}, this);
+    strongDownRight.onUp.add(() => {strongCount ++}, this);
+
+    // Add game objects    
+    land = game.add.sprite(game.world.centerX, game.world.centerY, 'land');
+    land.anchor.setTo(0.5, 0.5);
+    land.scale.setTo(1.2,1.2);
+
+    window = game.add.sprite(game.world.centerX, game.world.centerY, 'window');
+    window.anchor.setTo(0.5, 0.5);
+    window.scale.setTo(1.2,1.2);
+
+    holder = game.add.sprite(game.world.centerX, game.world.centerY+1, 'holder');
+    holder.anchor.setTo(0.5, 0.5);
+    holder.scale.setTo(1.2,1.2);
+
+    merc = game.add.sprite(game.world.centerX + 250, game.world.centerY - 100, 'merc');
+    merc.anchor.setTo(0.5, 0.5);
+    merc.scale.setTo(1.2,1.2);
+
+    therm = game.add.sprite(game.world.centerX + 250, game.world.centerY, 'therm');
+    therm.anchor.setTo(0.5, 0.5);
+    therm.scale.setTo(1.2,1.2);
+
     game.add.text(5, game.height - 20, 'Made using boilerplate by oliverbenns https://github.com/oliverbenns/phaser-starter', { font: "bold 14px Arial", fill: "#fff" });
-    window = game.add.sprite(game.world.centerX, game.world.centerY * 1.2, 'window')
+
     this.count = game.add.text(5,5, 'Inputs: ' + inputCount, { font: "bold 14px Arial", fill: "#fff" });
 }
 
@@ -94,16 +146,22 @@ function update() {
             strongCount --;
             inputCount --;
         }
+    } else if (goingUp && window.y <= game.world.centerY+1) {
+        // window can't go any higher
+        isLocked = true;
+    } else if (goingDown && window.y + 2 >= game.world.centerY + window.height + 10) {
+        // window can't go any lower
+        isLocked = true;
     } else {
         if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) {
             window.y -= 8;
         }
         else if (goingUp) {
-            window.y -= 4;
+            window.y -= 2;
         }
 
         if (goingDown) {
-            window.y += 4;
+            window.y += 2;
         }
         else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) {
             window.y += 8; 
@@ -114,5 +172,7 @@ function update() {
     if (inputCount == 0) {
         isLocked = false;
     }
+
+    merc.y = window.y - 100
 
 }
