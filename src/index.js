@@ -75,7 +75,7 @@ function create() {
     // Add the hotkey objects
     weakUpLeft = game.input.keyboard.addKey(Phaser.Keyboard.E);
     weakUpLeft.onDown.add(() => {goingUp = true; inputCount ++}, this);
-    weakUpLeft.onUp.add(() => {goingUp = false; inputCount --;}, this);
+    weakUpLeft.onUp.add(() => {goingUp = false; inputCount --}, this);
 
     strongUpLeft = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
     strongUpLeft.onDown.add(() => {goingUp = true; inputCount ++}, this);
@@ -91,7 +91,7 @@ function create() {
 
     weakUpRight = game.input.keyboard.addKey(Phaser.Keyboard.U);
     weakUpRight.onDown.add(() => {goingUp = true; inputCount ++}, this);
-    weakUpRight.onUp.add(() => {goingUp = false; inputCount --;}, this);
+    weakUpRight.onUp.add(() => {goingUp = false; inputCount --}, this);
 
     strongUpRight = game.input.keyboard.addKey(Phaser.Keyboard.SEVEN);
     strongUpRight.onDown.add(() => {goingUp = true; inputCount ++}, this);
